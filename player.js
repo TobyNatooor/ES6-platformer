@@ -1,8 +1,9 @@
 
 export class thePlayer {
-    constructor() {
+    constructor(leftKey, upKey, rightKey, color) {
         this.canvas = document.querySelector('#gameScreen');
         this.context = this.canvas.getContext('2d');
+        this.gray = this.canvas.getBoundingClientRect();
         this.blockHeight = 80;
         this.blockWidth = 80;
         this.coord = { x: 220, y: 400 };
@@ -12,52 +13,51 @@ export class thePlayer {
         this.up = false;
         this.jumping = false;
         this.slower = 0;
+        this.leftKey = leftKey;
+        this.upKey = upKey;
+        this.rightKey = rightKey;
+        this.color = color;
+        this.lastKey;
     }
 
-    displayPlayer = () => {
-        this.context.clearRect(0, 0, 600, 600);
-        this.context.fillStyle = 'blue';
+    displayPlayer() {
+        this.context.fillStyle = this.color;
         this.context.fillRect(this.coord.x, this.coord.y, this.blockHeight, this.blockWidth);
     }
 
-    movePlayer = () => {
+    controls() {
         document.addEventListener('keydown', () => {
             switch (event.keyCode) {
-                case 37: //left
-                    console.log("left")
+                case this.leftKey:
                     this.left = true;
+                    this.lastKey = 0;
                     break;
-                case 38: //up
-                    console.log("up")
+                case this.upKey:
                     this.up = true;
+                    this.lastKey = 1;
                     break;
-                case 39: //right
-                    console.log("right")
+                case this.rightKey:
                     this.right = true;
-                    break;
-                case 40: //down
-                    console.log("down")
+                    this.lastKey = 2;
                     break;
             }
         });
         document.addEventListener('keyup', () => {
             switch (event.keyCode) {
-                case 37: //left
+                case this.leftKey:
                     this.left = false;
                     break;
-                case 38: //up
+                case this.upKey:
                     this.up = false;
                     break;
-                case 39: //right
+                case this.rightKey:
                     this.right = false;
-                    break;
-                case 40: //down
                     break;
             }
         });
 
     }
-    animate = () => {
+    movePlayer() {
         this.jumping = false;
 
         if (this.left) {
@@ -74,10 +74,30 @@ export class thePlayer {
             this.slower = 0;
         }
         if (this.jumping) {
-            this.coord.y += - 15  + this.slower;;
+            this.coord.y += - 15 + this.slower;;
             this.slower++;
         }
         this.displayPlayer();
-        window.requestAnimationFrame(this.animate)
+    }
+
+    stop(blocks) {
+        for (let i = 0; i < blocks.length; i++) {
+            if (this.coord.y < (blocks[i][1] - this.gray.y + 20) && this.coord.y + this.blockHeight > (blocks[i][1] - this.gray.y)) {
+                if (this.coord.x < (blocks[i][0] - this.gray.x + 20) && this.coord.x + this.blockWidth > (blocks[i][0] - this.gray.x)) {
+                    switch (this.lastKey) {
+                        case 0:
+                            this.coord.x++;
+                            break;
+                        case 1:
+                            this.coord.y++;
+                            break;
+                        case 2:
+                            this.coord.x--;
+                            break;
+                    }
+                    this.stop(blocks);
+                }
+            }
+        }
     }
 }
