@@ -1,6 +1,6 @@
 
 export class thePlayer {
-    constructor(leftKey, upKey, rightKey, color) {
+    constructor(color) {
         this.canvas = document.querySelector('#gameScreen');
         this.context = this.canvas.getContext('2d');
         this.gray = this.canvas.getBoundingClientRect();
@@ -13,9 +13,6 @@ export class thePlayer {
         this.up = false;
         this.jumping = false;
         this.slower = 0;
-        this.leftKey = leftKey;
-        this.upKey = upKey;
-        this.rightKey = rightKey;
         this.color = color;
         this.lastKey;
     }
@@ -24,38 +21,42 @@ export class thePlayer {
         this.context.fillStyle = this.color;
         this.context.fillRect(this.coord.x, this.coord.y, this.blockHeight, this.blockWidth);
     }
-
     controls() {
-        document.addEventListener('keydown', () => {
+        document.addEventListener("keydown", () => {
             switch (event.keyCode) {
-                case this.leftKey:
+                case 37:
+                case 65:
                     this.left = true;
                     this.lastKey = 0;
                     break;
-                case this.upKey:
+                case 38:
+                case 87:
                     this.up = true;
                     this.lastKey = 1;
                     break;
-                case this.rightKey:
+                case 39:
+                case 68:
                     this.right = true;
                     this.lastKey = 2;
                     break;
             }
         });
-        document.addEventListener('keyup', () => {
+        document.addEventListener("keyup", () => {
             switch (event.keyCode) {
-                case this.leftKey:
+                case 37:
+                case 65:
                     this.left = false;
                     break;
-                case this.upKey:
+                case 38:
+                case 87:
                     this.up = false;
                     break;
-                case this.rightKey:
+                case 39:
+                case 68:
                     this.right = false;
                     break;
             }
         });
-
     }
     movePlayer() {
         this.jumping = false;
@@ -77,9 +78,7 @@ export class thePlayer {
             this.coord.y += - 15 + this.slower;;
             this.slower++;
         }
-        this.displayPlayer();
     }
-
     stop(blocks) {
         for (let i = 0; i < blocks.length; i++) {
             if (this.coord.y < (blocks[i][1] - this.gray.y + 20) && this.coord.y + this.blockHeight > (blocks[i][1] - this.gray.y)) {

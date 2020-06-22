@@ -6,29 +6,26 @@ export class theCanvas {
         this.gray = this.canvas.getBoundingClientRect();
         this.canvas.width = 600;
         this.canvas.height = 600;
-        this.canvasCoord = 
-        this.blockArray = [/*[260 + this.gray.x, 490 + this.gray.y]*/];
+        this.canvasCoord =
+            this.blockArray = [];
     }
 
     clearCanvas() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     }
-
     coordHover = () => {
         this.canvas.addEventListener('mousemove', () => {
             document.querySelector('#canvasCoords').innerHTML
-                = (event.clientX - this.gray.x) + ', ' +
-                (event.clientY - this.gray.y);
+                = Math.floor(event.clientX - this.gray.x) + ', ' +
+                Math.floor(event.clientY - this.gray.y);
         });
     }
-
     createBlock() {
         this.canvas.addEventListener('click', () => {
             this.blockArray.push([event.clientX - 10, event.clientY - 10]);
             console.log(this.blockArray)
         });
     }
-
     drawBlock() {
         for (let i = 0; i < this.blockArray.length; i++) {
             this.context.fillStyle = 'green'
