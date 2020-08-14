@@ -12,8 +12,8 @@ p1.controls();
 
 function animate() {
     c.clearCanvas();
-    p1.movePlayer();
-    p1.stop(c.blockArray);
+    p1.movePlayer(c.blockArray);
+    //p1.stop(c.blockArray);
     p1.displayPlayer();
     c.drawBlock();
     window.requestAnimationFrame(animate);
