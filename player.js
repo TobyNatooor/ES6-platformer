@@ -4,23 +4,19 @@ export class thePlayer {
         this.canvas = document.querySelector('#gameScreen');
         this.context = this.canvas.getContext('2d');
         this.gray = this.canvas.getBoundingClientRect();
-        this.blockHeight = 80;
-        this.blockWidth = 80;
         this.coord = { x: 220, y: 400 };
-        this.test = document.querySelector("#test");
+        this.blockHW = 80;
+        this.color = color;
         this.left = false;
         this.right = false;
         this.up = false;
         this.jumping = false;
-        this.slower = 0;
-        this.color = color;
-        this.lastKey;
-        this.isThereObstacle = false
+        this.gravity = false;
+        this.acc = 0;
     }
-
     displayPlayer() {
         this.context.fillStyle = this.color;
-        this.context.fillRect(this.coord.x, this.coord.y, this.blockHeight, this.blockWidth);
+        this.context.fillRect(this.coord.x, this.coord.y, this.blockHW, this.blockHW);
     }
     controls() {
         document.addEventListener("keydown", () => {
@@ -28,17 +24,14 @@ export class thePlayer {
                 case 37:
                 case 65:
                     this.left = true;
-                    this.lastKey = 0;
                     break;
                 case 38:
                 case 87:
                     this.up = true;
-                    this.lastKey = 1;
                     break;
                 case 39:
                 case 68:
                     this.right = true;
-                    this.lastKey = 2;
                     break;
             }
         });
@@ -59,63 +52,62 @@ export class thePlayer {
             }
         });
     }
-    movePlayer(blocks) {
-        let testOne = this.coord.x
-        let testTwo = this.coord.y
-
-        if (!this.isThereObstacle) {
-            this.jumping = false;
-
-            if (this.left) {
-                this.coord.x += -8;
-            }
-            if (this.right) {
-                this.coord.x += 8;
-            }
-            if (this.coord.y < 400) {
-                this.jumping = true;
-            }
-            if (this.up && !this.jumping) {
-                this.coord.y += - 15;
-                this.slower = 0;
-            }
-            if (this.jumping) {
-                this.coord.y += - 15 + this.slower;
-                this.slower++;
-                this.lastKey = 3
+    movePlayer(blocks, obstacleHW) {
+        // move left
+        if (this.left) {
+            this.coord.x += -8;
+        }
+        // move right
+        if (this.right) {
+            this.coord.x += 8;
+        }
+        // jump
+        if (this.up && !this.jumping && !this.gravity) {
+            this.coord.y += - 15;
+            this.acc = 0;
+            this.jumping = true
+        }
+        // jumping
+        if (this.jumping) {
+            this.coord.y += - 15 + this.acc;
+            this.acc++;
+            if (this.acc - 15 == 0) {
+                this.jumping = false
+                this.gravity = true
+                this.acc = 0;
             }
         }
-
-        for (let i = 0; i < blocks.length; i++) {
-            if (this.coord.x < (blocks[i][0] - this.gray.x + 20) && this.coord.x + this.blockWidth > (blocks[i][0] - this.gray.x) &&
-                this.coord.y < (blocks[i][1] - this.gray.y + 20) && this.coord.y + this.blockHeight > (blocks[i][1] - this.gray.y)) { // widthin x and y coordinates
-                this.coord.x = testOne
-                this.coord.y = testTwo
-            }
+        // gravity 
+        if (this.gravity) {
+            this.coord.y += this.acc;
+            this.acc++;
         }
-    }
-    stop(blocks) {
-        for (let i = 0; i < blocks.length; i++) {
-            if (this.coord.x < (blocks[i][0] - this.gray.x + 20) && this.coord.x + this.blockWidth > (blocks[i][0] - this.gray.x)) { // widthin x  coordinates
-                if (this.coord.y < (blocks[i][1] - this.gray.y + 20) && this.coord.y + this.blockHeight > (blocks[i][1] - this.gray.y)) { // widthin y coordinates
-                    // switch (this.lastKey) {
-                    //     case 0:
-                    //         this.coord.x++;
-                    //         break;
-                    //     case 1:
-                    //         this.coord.y++;
-                    //         break;
-                    //     case 2:
-                    //         this.coord.x--;
-                    //         break;
-                    //     case 3: 
-                    //         this.coord.y--;
-                    //         break
+        // avoids obstacles
+        let avoidObstacles = () => {
+            for (let i = 0; i < blocks.length; i++) {
+                if (this.coord.x < (blocks[i][0] - this.gray.x + obstacleHW) &&
+                    this.coord.x + this.blockHW > (blocks[i][0] - this.gray.x) &&
+                    this.coord.y < (blocks[i][1] - this.gray.y + obstacleHW) &&
+                    this.coord.y + this.blockHW > (blocks[i][1] - this.gray.y)) {
+
+                    // if (this.coord.x + this.blockHW > (blocks[i][0] - this.gray.x + obstacleHW) &&
+                    //     this.coord.y + this.blockHW > (blocks[i][1] - this.gray.y)) { // left
+                    //     this.coord.x += 1;
+                    //     avoidObstacles()
+
+                    // } else if (this.coord.x + this.blockHW < (blocks[i][0] - this.gray.x + obstacleHW) &&
+                    //           this.coord.y + this.blockHW > (blocks[i][1] - this.gray.y)) { // right
+                    //     this.coord.x += -1;
+                    //     avoidObstacles()
+                    // } else {
+                    //     this.acc = 0;
+                    //     this.coord.y += -1
+                    //     this.gravity = false;
+                    //     avoidObstacles()
                     // }
-                    // this.stop(blocks);
-
                 }
             }
         }
+        avoidObstacles()
     }
 }

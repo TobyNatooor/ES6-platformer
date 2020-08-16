@@ -1,13 +1,13 @@
 
 export class theCanvas {
-    constructor() {
+    constructor(obstacleHW) {
         this.canvas = document.querySelector('#gameScreen');
         this.context = this.canvas.getContext('2d');
         this.gray = this.canvas.getBoundingClientRect();
         this.canvas.width = 600;
         this.canvas.height = 600;
-        this.canvasCoord =
-            this.blockArray = [];
+        this.obstacleHW = obstacleHW
+        this.blockArray = [];
     }
 
     clearCanvas() {
@@ -16,8 +16,8 @@ export class theCanvas {
     coordHover = () => {
         this.canvas.addEventListener('mousemove', () => {
             document.querySelector('#canvasCoords').innerHTML
-                = Math.floor(event.clientX - this.gray.x) + ', ' +
-                Math.floor(event.clientY - this.gray.y);
+                = Math.floor(event.clientX - this.gray.x) + ', '
+                + Math.floor(event.clientY - this.gray.y);
         });
     }
     createBlock() {
@@ -32,7 +32,7 @@ export class theCanvas {
             this.context.fillRect(
                 this.blockArray[i][0] - this.gray.x,
                 this.blockArray[i][1] - this.gray.y,
-                20, 20)
+                this.obstacleHW, this.obstacleHW)
         }
     }
 }
